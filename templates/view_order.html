@@ -1,0 +1,270 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1 class="page-title">Order Details</h1>
+
+<!-- Navigation bar with a back button -->
+<nav class="inventory-nav">
+    <a href="{{ url_for('order_report') }}" class="nav-button">
+        <i class="fas fa-arrow-left"></i> Back
+    </a>
+</nav>
+
+<!-- Order Information Section -->
+<div class="order-details">
+    <div class="order-info">
+        <label>Order No:</label> {{ order['order_id'] }}
+    </div>
+    <div class="order-info">
+        <label>Prepared by:</label> {{ order['prepared_by'] }}
+    </div>
+    <div class="order-info">
+        <label>Checked by:</label> {{ order['checked_by'] }}
+    </div>
+    <div class="order-info">
+        <label>Date:</label> {{ order['date'] }}
+    </div>
+    <div class="order-info">
+        <label>Time:</label> {{ order['time'] }}
+    </div>
+    <div class="order-info">
+        <label>Store/Branch:</label> {{ order['store_branch'] }}
+    </div>
+    <div class="order-info">
+        <label>Status:</label> {{ order['status'] }}
+    </div>
+</div>
+
+<!-- Tables for each category -->
+<div class="tables-container">
+    <!-- Wet Items -->
+    <div class="card category-table" id="wet-items">
+        <h2 class="table-title">Wet Items</h2>
+        <table class="custom-inventory-table">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>UOI</th>
+                    <th>Quantity</th>
+                    <th>Prepared</th>
+                    <th>Received</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item, uoi, qty, prepared, received in order['wet_items'] %}
+                <tr>
+                    <td>{{ item }}</td>
+                    <td>{{ uoi }}</td>
+                    <td>{{ qty }}</td>
+                    <td>{{ prepared }}</td>
+                    <td>{{ received }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Sauce/Spice/Dry Items -->
+    <div class="card category-table" id="sauce-spice-dry">
+        <h2 class="table-title">Sauce/Spice/Dry Items</h2>
+        <table class="custom-inventory-table">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>UOI</th>
+                    <th>Quantity</th>
+                    <th>Prepared</th>
+                    <th>Received</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item, uoi, qty, prepared, received in order['sauce_items'] %}
+                <tr>
+                    <td>{{ item }}</td>
+                    <td>{{ uoi }}</td>
+                    <td>{{ qty }}</td>
+                    <td>{{ prepared }}</td>
+                    <td>{{ received }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Ice Cream Items -->
+    <div class="card category-table" id="ice-cream-items">
+        <h2 class="table-title">Ice Cream</h2>
+        <table class="custom-inventory-table">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>UOI</th>
+                    <th>Quantity</th>
+                    <th>Prepared</th>
+                    <th>Received</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item, uoi, qty, prepared, received in order['ice_cream_items'] %}
+                <tr>
+                    <td>{{ item }}</td>
+                    <td>{{ uoi }}</td>
+                    <td>{{ qty }}</td>
+                    <td>{{ prepared }}</td>
+                    <td>{{ received }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Shakes Items -->
+    <div class="card category-table" id="shakes-items">
+        <h2 class="table-title">Shakes</h2>
+        <table class="custom-inventory-table">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>UOI</th>
+                    <th>Quantity</th>
+                    <th>Prepared</th>
+                    <th>Received</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item, uoi, qty, prepared, received in order['shakes_items'] %}
+                <tr>
+                    <td>{{ item }}</td>
+                    <td>{{ uoi }}</td>
+                    <td>{{ qty }}</td>
+                    <td>{{ prepared }}</td>
+                    <td>{{ received }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Vegetables Items -->
+    <div class="card category-table" id="vegetables-items">
+        <h2 class="table-title">Vegetables</h2>
+        <table class="custom-inventory-table">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>UOI</th>
+                    <th>Quantity</th>
+                    <th>Prepared</th>
+                    <th>Received</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item, uoi, qty, prepared, received in order['vegetables_items'] %}
+                <tr>
+                    <td>{{ item }}</td>
+                    <td>{{ uoi }}</td>
+                    <td>{{ qty }}</td>
+                    <td>{{ prepared }}</td>
+                    <td>{{ received }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Packaging Items -->
+    <div class="card category-table" id="packaging-items">
+        <h2 class="table-title">Packaging</h2>
+        <table class="custom-inventory-table">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>UOI</th>
+                    <th>Quantity</th>
+                    <th>Prepared</th>
+                    <th>Received</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item, uoi, qty, prepared, received in order['packaging_items'] %}
+                <tr>
+                    <td>{{ item }}</td>
+                    <td>{{ uoi }}</td>
+                    <td>{{ qty }}</td>
+                    <td>{{ prepared }}</td>
+                    <td>{{ received }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Groceries Items -->
+    <div class="card category-table" id="groceries-items">
+        <h2 class="table-title">Groceries</h2>
+        <table class="custom-inventory-table">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>UOI</th>
+                    <th>Quantity</th>
+                    <th>Prepared</th>
+                    <th>Received</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item, uoi, qty, prepared, received in order['groceries_items'] %}
+                <tr>
+                    <td>{{ item }}</td>
+                    <td>{{ uoi }}</td>
+                    <td>{{ qty }}</td>
+                    <td>{{ prepared }}</td>
+                    <td>{{ received }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Manual Request Items -->
+    <div class="card category-table" id="manual-request-items">
+        <h2 class="table-title">Manual Request</h2>
+        <table class="custom-inventory-table">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>UOI</th>
+                    <th>Quantity</th>
+                    <th>Prepared</th>
+                    <th>Received</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item, uoi, qty, prepared, received in order['manual_items'] %}
+                <tr>
+                    <td>{{ item }}</td>
+                    <td>{{ uoi }}</td>
+                    <td>{{ qty }}</td>
+                    <td>{{ prepared }}</td>
+                    <td>{{ received }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<style>
+    .tables-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 2 columns */
+    grid-template-rows: repeat(8, auto); /* 8 rows, automatic height */
+    gap: 16px; /* Adjust the spacing between the grid items */
+    padding: 20px; /* Optional padding for the container */
+}
+
+
+</style>
+
+{% endblock %}

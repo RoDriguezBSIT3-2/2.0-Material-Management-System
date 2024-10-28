@@ -1,0 +1,588 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1 class="page-title">Order Form</h1>
+
+<nav class="inventory-nav">
+    <a href="{{ url_for('order_report') }}" class="nav-button" id="back-button">
+        <i class="fas fa-arrow-left"></i> Back
+    </a>
+    <div class="nav-button">
+        <a class="nav-button" id="category-button">
+        <i class="fas fa-list-alt"></i> Categories
+        </a>
+        <div class="dropdown-menu" id="dropdown-menu" style="display: none;">
+            <ul>
+                <li>
+                    <a href="#" class="dropdown-item" data-category="wet-item">
+                        <i class="fas fa-water"></i> WET ITEM
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="dropdown-item" data-category="sauce-spice-dry">
+                        <i class="fas fa-pepper-hot"></i> SAU/SPIC/DRY
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="dropdown-item" data-category="ice-cream">
+                        <i class="fas fa-ice-cream"></i> ICE CREAM
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="dropdown-item" data-category="shakes">
+                        <i class="fas fa-blender"></i> SHAKES
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="dropdown-item" data-category="vegetables">
+                        <i class="fas fa-carrot"></i> VEGETABLES
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="dropdown-item" data-category="packaging">
+                        <i class="fas fa-box-open"></i> PACKAGING
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="dropdown-item" data-category="groceries">
+                        <i class="fas fa-shopping-basket"></i> GROCERIES
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="dropdown-item" data-category="manual-request">
+                        <i class="fas fa-hand-paper"></i> MANUAL REQUEST
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Order Form Container -->
+<form id="order-form" action="#" method="POST">
+        <div class="order-details">
+            <div class="order-info">
+                <label for="order-id">Order No:</label>
+                <input type="text" id="order-id" name="order_id" placeholder="Enter order ID" required>
+            </div>
+            <div class="order-info">
+                <label for="prepared-by">Prepared by:</label>
+                <input type="text" id="prepared-by" name="prepared_by" placeholder="Enter preparer's name" required>
+            </div>
+            <div class="order-info">
+                <label for="checked-by">Checked by:</label>
+                <input type="text" id="checked-by" name="checked_by" placeholder="Enter checker’s name" required>
+            </div>
+            <div class="order-info">
+                <label for="date">Date:</label>
+                <input type="date" id="date" name="date" required>
+            </div>
+            <div class="order-info">
+                <label for="time">Time:</label>
+                <input type="time" id="time" name="time" required>
+            </div>
+            <div class="order-info">
+                <label for="store-branch">Store/Branch:</label>
+                <input type="text" id="store-branch" name="store_branch" placeholder="Enter store or branch name" required>
+            </div>
+            <div class="order-info">
+                <label for="status">Status:</label>
+                <select id="status" name="status" required>
+                    <option value="" disabled selected>Select status</option>
+                    <option value="Preparing">Preparing</option>
+                    <option value="Received">Received</option>
+                </select>
+            </div>
+        </div>
+        <!-- Container for Dropdown Tables -->
+        <div class="tables-container">
+            <!-- Wet Item Table -->
+            <div class="card category-table" id="wet-item" style="display:none;">
+                <h2 class="table-title">WET ITEM</h2>
+                <button id="wet-item-add-btn" type="button" class="add-row-btn">Add Row</button>
+                <table class="custom-inventory-table">
+                    <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>UOI</th>
+                        <th>Quantity</th>
+                        <th>Prepared</th>
+                        <th>Received</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody id="wet-item-body">
+                    <tr>
+                        <td><input type="text" name="wet_item[]" placeholder="Enter item"></td>
+                        <td><input type="text" name="wet_item_uoi[]" placeholder="UOI"></td>
+                        <td><input type="number" name="wet_item_qty[]" min="0" step="1"></td>
+                        <td><input type="text" name="wet_item_prepared[]"></td>
+                        <td><input type="text" name="wet_item_received[]"></td>
+                        <td>
+                            <button type="button" class="edit-row-btn">Edit</button>
+                            <button type="button" class="delete-row-btn">Delete</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+
+           <!-- SAUCE/SPICE/DRY Table -->
+            <div class="card category-table" id="sauce-spice-dry" style="display:none;">
+                <h2 class="table-title">SAUCE/SPICE/DRY</h2>
+                <button id="sauce-spice-dry-add-btn" type="button" class="add-row-btn">Add Row</button>
+                <table class="custom-inventory-table">
+                    <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>UOI</th>
+                        <th>Quantity</th>
+                        <th>Prepared</th>
+                        <th>Received</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody id="sauce-spice-dry-body">
+                    <tr>
+                        <td><input type="text" name="sauce_item[]" placeholder="Enter item"></td>
+                        <td><input type="text" name="sauce_item_uoi[]" placeholder="UOI"></td>
+                        <td><input type="number" name="sauce_item_qty[]" min="0" step="1"></td>
+                        <td><input type="text" name="sauce_item_prepared[]"></td>
+                        <td><input type="text" name="sauce_item_received[]"></td>
+                        <td>
+                            <button type="button" class="edit-row-btn">Edit</button>
+                            <button type="button" class="delete-row-btn">Delete</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- ICE CREAM Table -->
+            <div class="card category-table" id="ice-cream" style="display:none;">
+                <h2 class="table-title">ICE CREAM</h2>
+                <button id="ice-cream-add-btn" type="button" class="add-row-btn">Add Row</button>
+                <table class="custom-inventory-table">
+                    <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>UOI</th>
+                        <th>Quantity</th>
+                        <th>Prepared</th>
+                        <th>Received</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody id="ice-cream-body">
+                    <tr>
+                        <td><input type="text" name="ice_cream_item[]" placeholder="Enter item"></td>
+                        <td><input type="text" name="ice_cream_item_uoi[]" placeholder="UOI"></td>
+                        <td><input type="number" name="ice_cream_item_qty[]" min="0" step="1"></td>
+                        <td><input type="text" name="ice_cream_item_prepared[]"></td>
+                        <td><input type="text" name="ice_cream_item_received[]"></td>
+                        <td>
+                            <button type="button" class="edit-row-btn">Edit</button>
+                            <button type="button" class="delete-row-btn">Delete</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- SHAKES Table -->
+            <div class="card category-table" id="shakes" style="display:none;">
+                <h2 class="table-title">SHAKES</h2>
+                <button id="shakes-add-btn" type="button" class="add-row-btn">Add Row</button>
+                <table class="custom-inventory-table">
+                    <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>UOI</th>
+                        <th>Quantity</th>
+                        <th>Prepared</th>
+                        <th>Received</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody id="shakes-body">
+                    <tr>
+                        <td><input type="text" name="shakes_item[]" placeholder="Enter item"></td>
+                        <td><input type="text" name="shakes_item_uoi[]" placeholder="UOI"></td>
+                        <td><input type="number" name="shakes_item_qty[]" min="0" step="1"></td>
+                        <td><input type="text" name="shakes_item_prepared[]"></td>
+                        <td><input type="text" name="shakes_item_received[]"></td>
+                        <td>
+                            <button type="button" class="edit-row-btn">Edit</button>
+                            <button type="button" class="delete-row-btn">Delete</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- VEGETABLES Table -->
+            <div class="card category-table" id="vegetables" style="display:none;">
+                <h2 class="table-title">VEGETABLES</h2>
+                <button id="vegetables-add-btn" type="button" class="add-row-btn">Add Row</button>
+                <table class="custom-inventory-table">
+                    <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>UOI</th>
+                        <th>Quantity</th>
+                        <th>Prepared</th>
+                        <th>Received</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody id="vegetables-body">
+                    <tr>
+                        <td><input type="text" name="vegetables_item[]" placeholder="Enter item"></td>
+                        <td><input type="text" name="vegetables_item_uoi[]" placeholder="UOI"></td>
+                        <td><input type="number" name="vegetables_item_qty[]" min="0" step="1"></td>
+                        <td><input type="text" name="vegetables_item_prepared[]"></td>
+                        <td><input type="text" name="vegetables_item_received[]"></td>
+                        <td>
+                            <button type="button" class="edit-row-btn">Edit</button>
+                            <button type="button" class="delete-row-btn">Delete</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- PACKAGING Table -->
+            <div class="card category-table" id="packaging" style="display:none;">
+                <h2 class="table-title">PACKAGING</h2>
+                <button id="packaging-add-btn" type="button" class="add-row-btn">Add Row</button>
+                <table class="custom-inventory-table">
+                    <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>UOI</th>
+                        <th>Quantity</th>
+                        <th>Prepared</th>
+                        <th>Received</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody id="packaging-body">
+                    <tr>
+                        <td><input type="text" name="packaging_item[]" placeholder="Enter item"></td>
+                        <td><input type="text" name="packaging_item_uoi[]" placeholder="UOI"></td>
+                        <td><input type="number" name="packaging_item_qty[]" min="0" step="1"></td>
+                        <td><input type="text" name="packaging_item_prepared[]"></td>
+                        <td><input type="text" name="packaging_item_received[]"></td>
+                        <td>
+                            <button type="button" class="edit-row-btn">Edit</button>
+                            <button type="button" class="delete-row-btn">Delete</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- GROCERIES Table -->
+            <div class="card category-table" id="groceries" style="display:none;">
+                <h2 class="table-title">GROCERIES</h2>
+                <button id="groceries-add-btn" type="button" class="add-row-btn">Add Row</button>
+                <table class="custom-inventory-table">
+                    <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>UOI</th>
+                        <th>Quantity</th>
+                        <th>Prepared</th>
+                        <th>Received</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody id="groceries-body">
+                    <tr>
+                        <td><input type="text" name="groceries_item[]" placeholder="Enter item"></td>
+                        <td><input type="text" name="groceries_item_uoi[]" placeholder="UOI"></td>
+                        <td><input type="number" name="groceries_item_qty[]" min="0" step="1"></td>
+                        <td><input type="text" name="groceries_item_prepared[]"></td>
+                        <td><input type="text" name="groceries_item_received[]"></td>
+                        <td>
+                            <button type="button" class="edit-row-btn">Edit</button>
+                            <button type="button" class="delete-row-btn">Delete</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- MANUAL REQUEST Table -->
+            <div class="card category-table" id="manual-request" style="display:none;">
+                <h2 class="table-title">MANUAL REQUEST</h2>
+                <button id="manual-request-add-btn" type="button" class="add-row-btn">Add Row</button>
+                <table class="custom-inventory-table">
+                    <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>UOI</th>
+                        <th>Quantity</th>
+                        <th>Prepared</th>
+                        <th>Received</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody id="manual-request-body">
+                    <tr>
+                        <td><input type="text" name="manual_item[]" placeholder="Enter item"></td>
+                        <td><input type="text" name="manual_item_uoi[]" placeholder="UOI"></td>
+                        <td><input type="number" name="manual_item_qty[]" min="0" step="1"></td>
+                        <td><input type="text" name="manual_item_prepared[]"></td>
+                        <td><input type="text" name="manual_item_received[]"></td>
+                        <td>
+                            <button type="button" class="edit-row-btn">Edit</button>
+                            <button type="button" class="delete-row-btn">Delete</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="button-container">
+                 <button type="submit" class="submit-button-order">Submit Order</button>
+            </div>
+        </div>
+</form>
+
+<style>
+        /* CSS for input height */
+        .custom-inventory-table input[type="number"] {
+            height: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        .error-message {
+            font-size: 12px;
+            color: red;
+            display: none; /* Hide by default */
+        }
+        .add-row-btn {
+            margin: 10px 0;
+            padding: 8px 16px;
+            font-size: 14px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .add-row-btn:hover {
+            background-color: #0056b3;
+        }
+    /* Style for the table cell containing the buttons */
+        td {
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        /* General button style */
+        .edit-row-btn, .delete-row-btn {
+            background-color: #4CAF50; /* Default green background */
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            margin: 4px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        /* Hover effect for Edit button */
+        .edit-row-btn:hover {
+            background-color: #45a049; /* Darker green on hover */
+        }
+
+        /* Style specifically for the Delete button */
+        .delete-row-btn {
+            background-color: #f44336; /* Red background for delete */
+        }
+
+        /* Hover effect for Delete button */
+        .delete-row-btn:hover {
+            background-color: #e60000; /* Darker red on hover */
+        }
+
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const categoryButton = document.getElementById('category-button');
+    const dropdownMenu = document.getElementById('dropdown-menu');
+    const dropdownItems = document.querySelectorAll('.dropdown-item');
+    const categoryTables = document.querySelectorAll('.category-table');
+    const form = document.getElementById('order-form');
+
+    // Show/Hide dropdown menu
+    categoryButton.addEventListener('click', function() {
+        dropdownMenu.style.display = dropdownMenu.style.display === 'none' ? 'block' : 'none';
+    });
+
+    // Add click event for each dropdown item
+    dropdownItems.forEach(item => {
+        item.addEventListener('click', function(event) {
+            const selectedCategory = event.target.getAttribute('data-category');
+
+            // Hide all category tables
+            categoryTables.forEach(table => {
+                table.style.display = 'none';
+            });
+
+            // Show the selected category table
+            document.getElementById(selectedCategory).style.display = 'block';
+
+            // Hide the dropdown menu after selection
+            dropdownMenu.style.display = 'none';
+        });
+    });
+
+    // Add row function with category-specific field names
+    function addRow(tableId) {
+        const body = document.getElementById(`${tableId}-body`);
+        const newRow = document.createElement('tr');
+
+        // Map tableId to the correct form field names
+        let itemPrefix;
+        switch (tableId) {
+            case 'wet-item':
+                itemPrefix = 'wet_item';
+                break;
+            case 'sauce-spice-dry':
+                itemPrefix = 'sauce_item';
+                break;
+            case 'ice-cream':
+                itemPrefix = 'ice_cream_item';
+                break;
+            case 'shakes':
+                itemPrefix = 'shakes_item';
+                break;
+            case 'vegetables':
+                itemPrefix = 'vegetables_item';
+                break;
+            case 'packaging':
+                itemPrefix = 'packaging_item';
+                break;
+            case 'groceries':
+                itemPrefix = 'groceries_item';
+                break;
+            case 'manual-request':
+                itemPrefix = 'manual_item';
+                break;
+            default:
+                itemPrefix = 'unknown';
+        }
+
+        // Input fields are initially editable (no readonly attribute)
+        newRow.innerHTML = `
+            <td><input type="text" name="${itemPrefix}[]" placeholder="Enter item"></td>
+            <td><input type="text" name="${itemPrefix}_uoi[]" placeholder="UOI"></td>
+            <td><input type="number" name="${itemPrefix}_qty[]" min="0" step="1"></td>
+            <td><input type="text" name="${itemPrefix}_prepared[]"></td>
+            <td><input type="text" name="${itemPrefix}_received[]"></td>
+            <td>
+                <button type="button" class="edit-row-btn">Edit</button>
+                <button type="button" class="delete-row-btn">Delete</button>
+            </td>
+        `;
+
+        body.appendChild(newRow);
+        setUpEditAndDelete(newRow); // Set up edit and delete functionality for the new row
+    }
+
+    // Function to set up edit and delete functionality for each row
+    function setUpEditAndDelete(row) {
+        const editButton = row.querySelector('.edit-row-btn');
+        const deleteButton = row.querySelector('.delete-row-btn');
+        const inputs = row.querySelectorAll('input');
+
+        // Edit/Save functionality toggle
+        editButton.addEventListener('click', function() {
+            const isEditing = editButton.textContent === 'Edit';
+
+            if (isEditing) {
+                // Make inputs editable
+                inputs.forEach(input => input.removeAttribute('readonly'));
+                editButton.textContent = 'Save'; // Switch button to Save
+            } else {
+                // Save inputs (make them readonly again)
+                inputs.forEach(input => input.setAttribute('readonly', true));
+                editButton.textContent = 'Edit'; // Switch button back to Edit
+            }
+        });
+
+        // Delete functionality
+        deleteButton.addEventListener('click', function() {
+            row.remove(); // Remove the entire row
+        });
+    }
+
+    // Set up edit and delete functionality for pre-existing rows
+    function setUpInitialRows() {
+        const rows = document.querySelectorAll('tbody tr');
+        rows.forEach(row => {
+            setUpEditAndDelete(row);
+        });
+    }
+
+    // Add functionality for dynamically added rows for each item type
+    const itemTypes = [
+        'wet-item',
+        'sauce-spice-dry',
+        'ice-cream',
+        'shakes',
+        'vegetables',
+        'packaging',
+        'groceries',
+        'manual-request'
+    ];
+
+    itemTypes.forEach(type => {
+        const addButton = document.getElementById(`${type}-add-btn`);
+        if (addButton) {
+            addButton.addEventListener('click', function() {
+                addRow(type);
+            });
+        }
+    });
+
+    // Initialize edit and delete functionality for existing rows
+    setUpInitialRows();
+
+    // Function to validate form fields
+    function validateForm() {
+        const requiredInputs = form.querySelectorAll('input[required], select[required]');
+        let isValid = true;
+
+        requiredInputs.forEach(input => {
+            if (!input.value.trim()) {
+                input.style.borderColor = 'red'; // Highlight missing fields
+                isValid = false;
+            } else {
+                input.style.borderColor = ''; // Remove highlight
+            }
+        });
+
+        return isValid;
+    }
+
+    // Form submit event listener
+    form.addEventListener('submit', function(event) {
+        if (!validateForm()) {
+            event.preventDefault(); // Prevent form submission if validation fails
+            alert('Please fill in all required fields.');
+        }
+    });
+});
+
+</script>
+{% endblock %}

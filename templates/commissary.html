@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1 class="page-title">Commissary</h1>
+<nav class="inventory-nav">
+    <a href="#" class="nav-button">
+        <i class="fas fa-file-alt"></i> Report
+    </a>
+    <a href="{{ url_for('purchase_records') }}" class="nav-button">
+        <i class="fas fa-file-invoice"></i> Purchase Records
+    </a>
+</nav>
+
+<div class="inventory-info">
+    <p><b class="highlight-date">{{ date_today }}</b></p>
+</div>
+
+{% endblock %}

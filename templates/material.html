@@ -1,0 +1,423 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1 class="page-title">Material</h1>
+
+<nav class="inventory-nav">
+    <a class="nav-button" id="add-material-button">
+        <i class="fas fa-plus-circle"></i> Add Material
+    </a>
+    <a href="{{ url_for('view_material') }}" class="nav-button">
+        <i class="fas fa-list-alt"></i> View Material
+    </a>
+    <a href="{{ url_for('get_material_log') }}" class="nav-button">
+        <i class="fas fa-book"></i> Material Waste Log
+    </a>
+    <div class="nav-button dropdown" id="export-button">
+        <i class="fas fa-file-export"></i> Export
+        <div class="dropdown-menu" id="export-options">
+            <ul>
+                <li><a href="#" class="export-option" data-type="copy"><i class="fas fa-copy"></i> Copy</a></li>
+                <li><a href="#" class="export-option" data-type="csv"><i class="fas fa-file-csv"></i> CSV</a></li>
+                <li><a href="#" class="export-option" data-type="excel"><i class="fas fa-file-excel"></i> Excel</a></li>
+                <li><a href="#" class="export-option" data-type="pdf"><i class="fas fa-file-pdf"></i> PDF</a></li>
+                <li><a href="#" class="export-option" data-type="print"><i class="fas fa-print"></i> Print</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="inventory-info">
+    <p><b class="highlight-date">{{ date_today }}</b></p>
+    <div class="search-box-container">
+        <form id="search-form" action="{{ url_for('material') }}" method="GET">
+            <input type="text" name="search" class="search-box" placeholder="Search" value="{{ request.args.get('search', '') }}">
+            <button type="submit" class="search-button">Search</button>
+        </form>
+    </div>
+</div>
+
+<!-- Alert Section -->
+{% if alerts %}
+<div class="alert-container">
+    {% for alert in alerts %}
+    <div class="alert">
+        <p><strong>Alert:</strong> Low stock for <b>{{ alert.item }}</b>.</p>
+        <p>Current Stock: <b>{{ alert.current_stock }}</b></p>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<table class="inventory-table">
+    <thead>
+        <tr>
+            <th>Items</th>
+            <th>(UOI)</th>
+            <th>Beginning</th>
+            <th>Receive/Incoming</th>
+            <th>Sales/Outgoing</th>
+            <th>Waste</th>
+            <th>Ending</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in material %}
+        <tr>
+            <td>{{ item.item }}</td>
+            <td>{{ item.uoi }}</td>
+            <td>{{ item.beginning }}</td>
+            <td>{{ item.incoming }}</td>
+            <td>{{ item.outgoing }}</td>
+            <td>{{ item.waste }}</td>
+            <td>{{ item.ending }}</td>
+            <td class="actions">
+                <!-- Open Edit Modal -->
+                <button type="button" class="edit" aria-label="Edit" onclick="openEditModal('{{ item.id }}')">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <!-- Delete Form -->
+                <form action="{{ url_for('delete_material', item_id=item.id) }}" method="POST" style="display:inline;">
+                    <button type="submit" class="delete" onclick="return confirm('Are you sure you want to delete this item?');" aria-label="Delete">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Modal Structure for Adding material -->
+<div id="add-material-modal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h1 class="page-title">Add Material</h1>
+        <form action="{{ url_for('add_material') }}" method="POST" class="add-material-form">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="item">Items:</label>
+                    <input type="text" id="item" name="item" required>
+                </div>
+                <div class="form-group">
+                    <label for="uoi">UOI:</label>
+                    <input type="text" id="uoi" name="uoi" required>
+                </div>
+                <div class="form-group">
+                    <label for="beginning">Beginning:</label>
+                    <input type="number" id="beginning" name="beginning" min="0" step="1" required>
+                </div>
+                <div class="form-group">
+                    <label for="incoming">Receive/Incoming:</label>
+                    <input type="number" id="incoming" name="incoming" min="0" step="1" required>
+                </div>
+                <div class="form-group">
+                    <label for="outgoing">Sales/Outgoing:</label>
+                    <input type="number" id="outgoing" name="outgoing" min="0" step="1" required>
+                </div>
+                <div class="form-group">
+                    <label for="waste">Waste:</label>
+                    <input type="number" id="waste" name="waste" min="0" step="1" required>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="submit-button">Save</button>
+                <button type="button" class="cancel-button" id="cancel-modal">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Edit Material Modal Structure -->
+<div id="edit-material-modal" class="modal">
+    <div class="modal-content">
+        <span class="edit-close">&times;</span>
+        <h1 class="page-title">Edit Material</h1>
+        <form id="edit-material-form" action="" method="POST" class="edit-material-form">
+            <!-- Hidden field to store the item ID -->
+            <input type="hidden" id="edit-item-id" name="item_id">
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="edit-item">Items:</label>
+                    <input type="text" id="edit-item" name="item" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-uoi">UOI:</label>
+                    <input type="text" id="edit-uoi" name="uoi" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-beginning">Beginning:</label>
+                    <input type="number" id="edit-beginning" name="beginning" min="0" step="1" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-incoming">Receive/Incoming:</label>
+                    <input type="number" id="edit-incoming" name="incoming" min="0" step="1" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-outgoing">Sales/Outgoing:</label>
+                    <input type="number" id="edit-outgoing" name="outgoing" min="0" step="1" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-waste">Waste:</label>
+                    <input type="number" id="edit-waste" name="waste" min="0" step="1" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-ending">Ending:</label>
+                    <input type="number" id="edit-ending" name="ending" min="0" step="1" required>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="submit-button">Save</button>
+                <button type="button" class="cancel-button" id="cancel-edit-modal">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<style>
+
+    #export-button {
+    background-color: #c8131a;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+    }
+
+    #export-button:hover {
+        background-color: #c8131a;
+    }
+
+    /* Export options dropdown container */
+    #export-options {
+        display: none;
+        position: absolute;
+        background-color: white;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        border-radius: 4px;
+        z-index: 1000;
+    }
+
+    /* Export option items */
+    .export-option {
+        color: #333;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+        font-size: 14px;
+        transition: background-color 0.2s;
+    }
+
+    .export-option:hover {
+        background-color: #f5f5f5;
+        cursor: pointer;
+    }
+
+    /* Hide default DataTables buttons */
+    .hidden-button {
+        display: none !important;
+    }
+
+    .dataTables_wrapper .dataTables_filter {
+    display: none;
+    }
+
+    /* Pagination styling */
+    .dataTables_wrapper .dataTables_paginate {
+        margin-top: 15px;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        padding: 6px 12px;
+        margin: 0 2px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+        background-color: #c8131a;
+        color: white !important;
+        border-color: ##c8131a;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+        background-color: #f5f5f5;
+        color: #333 !important;
+    }
+
+
+</style>
+
+<script>
+    // Modal handling for Add Material
+    var modal = document.getElementById("add-material-modal");
+    var modalBtn = document.getElementById("add-material-button");
+    var closeBtn = document.getElementsByClassName("close")[0];
+    var cancelModalBtn = document.getElementById("cancel-modal");
+
+    modalBtn.addEventListener("click", openModal);
+    closeBtn.addEventListener("click", closeModal);
+    cancelModalBtn.addEventListener("click", closeModal);
+    window.addEventListener("click", outsideClick);
+
+    function openModal() {
+        modal.style.display = "block";
+    }
+
+    function closeModal() {
+        modal.style.display = "none";
+    }
+
+    function outsideClick(e) {
+        if (e.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+
+    // Modal handling for Edit Inventory
+    var editModal = document.getElementById("edit-material-modal");
+    var editCloseBtn = document.getElementsByClassName("edit-close")[0];
+    var cancelEditModalBtn = document.getElementById("cancel-edit-modal");
+
+    editCloseBtn.addEventListener("click", closeEditModal);
+    cancelEditModalBtn.addEventListener("click", closeEditModal);
+    window.addEventListener("click", outsideClickEdit);
+
+    function openEditModal(itemId) {
+        editModal.style.display = "block";
+        // Fetch the item data and populate the form
+        fetch(`/edit_material/${itemId}`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('edit-item').value = data.item;
+                document.getElementById('edit-uoi').value = data.uoi;
+                document.getElementById('edit-beginning').value = data.beginning;
+                document.getElementById('edit-incoming').value = data.incoming;
+                document.getElementById('edit-outgoing').value = data.outgoing;
+                document.getElementById('edit-waste').value = data.waste;
+                document.getElementById('edit-ending').value = data.ending;
+                document.getElementById('edit-item-id').value = itemId; // Set item ID for form submission
+
+                // Update the form action URL for the edit submission
+                document.getElementById('edit-material-form').action = `/edit_material/${itemId}`;
+            })
+            .catch(error => {
+                console.error('Error fetching item data:', error);
+                alert('Failed to load item data.');
+            });
+    }
+
+    function closeEditModal() {
+        editModal.style.display = "none";
+    }
+
+    function outsideClickEdit(e) {
+        if (e.target == editModal) {
+            editModal.style.display = "none";
+        }
+    }
+
+     // Search form handling: Automatically submit on input clear
+    var searchInput = document.querySelector('.search-box');
+    var searchForm = document.getElementById('search-form');
+
+    searchInput.addEventListener('input', function() {
+        if (this.value.trim() === '') {
+            searchForm.submit(); // Auto-submit form when input is cleared
+        }
+    });
+     $(document).ready(function() {
+    // Initialize the DataTable
+    const table = $('.inventory-table').DataTable({
+        dom: 'Bfrtip',
+        buttons: [
+            {
+                extend: 'copy',
+                className: 'hidden-button',
+                exportOptions: {
+                    columns: ':not(:last-child)' // Exclude the Actions column
+                }
+            },
+            {
+                extend: 'csv',
+                className: 'hidden-button',
+                exportOptions: {
+                    columns: ':not(:last-child)'
+                },
+                filename: 'inventory_report'
+            },
+            {
+                extend: 'excel',
+                className: 'hidden-button',
+                exportOptions: {
+                    columns: ':not(:last-child)'
+                },
+                filename: 'inventory_report'
+            },
+            {
+                extend: 'pdf',
+                className: 'hidden-button',
+                exportOptions: {
+                    columns: ':not(:last-child)'
+                },
+                filename: 'inventory_report',
+                customize: function(doc) {
+                    doc.defaultStyle.fontSize = 10;
+                    doc.styles.tableHeader.fontSize = 11;
+                    doc.styles.title.fontSize = 14;
+                    doc.content[0].text = 'Inventory Report';
+                    doc.content[1].table.widths = Array(doc.content[1].table.body[0].length).fill('*');
+                }
+            },
+            {
+                extend: 'print',
+                className: 'hidden-button',
+                exportOptions: {
+                    columns: ':not(:last-child)'
+                },
+                customize: function(win) {
+                    $(win.document.body).find('h1').text('Material Report');
+                }
+            }
+        ],
+        // Hide the default buttons
+        dom: 'Bfrtip'
+    });
+
+    // Handle custom export button clicks
+    $('.export-option').on('click', function(e) {
+        e.preventDefault();
+        const exportType = $(this).data('type');
+        table.button(`.buttons-${exportType}`).trigger();
+        $('#export-options').hide();
+    });
+
+    // Toggle dropdown
+    $('#export-button').on('click', function(e) {
+        e.stopPropagation();
+        $('#export-options').toggle();
+    });
+
+    // Close dropdown when clicking outside
+    $(document).on('click', function(e) {
+        if (!$(e.target).closest('#export-button').length) {
+            $('#export-options').hide();
+        }
+    });
+});
+
+</script>
+
+
+
+
+{% endblock %}

@@ -1,0 +1,8 @@
+DateTime~=5.5
+Flask~=3.0.3
+Werkzeug~=3.0.3
+gunicorn
+Flask-SQLAlchemy
+PyJWT~=2.9.0
+SQLAlchemy~=2.0.35
+psycopg2~=2.9.9

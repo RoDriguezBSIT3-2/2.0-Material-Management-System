@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <link rel="icon" href="{{ url_for('static', filename='logo.png') }}">
+    <title>Passenger Seat</title>
+    <!-- Link to Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+    document.write(`
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables-buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.70/pdfmake.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.70/vfs_fonts.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables-buttons/2.4.2/js/buttons.html5.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables-buttons/2.4.2/js/buttons.print.min.js"></script>
+    `);
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="Passenger Seat Logo">
+        </div>
+        <div class="sidebar-items">
+            <!-- Dashboard Link -->
+            <a href="{{ url_for('dashboard') }}" class="sidebar-item">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+
+            <!-- Inventory Link -->
+            <a href="{{ url_for('inventory') }}" class="sidebar-item">
+                <i class="fas fa-warehouse"></i> Inventory
+            </a>
+
+            <a href="{{ url_for('material') }}" class="sidebar-item">
+                <i class="fas fa-boxes"></i> Material
+            </a>
+
+            <!-- Order & Request Link -->
+            <a href="{{ url_for('order_report') }}" class="sidebar-item">
+                <i class="fas fa-shopping-cart"></i> Order & Request
+            </a>
+
+            <!-- Commissary Link -->
+            <a href="{{ url_for('commissary') }}" class="sidebar-item">
+                <i class="fas fa-store"></i> Commissary
+            </a>
+        </div>
+
+        <!-- Logout Button -->
+        <button class="logout" onclick="location.href='{{ url_for('logout') }}'">
+            <i class="fas fa-sign-out-alt"></i> Log Out
+        </button>
+    </div>
+
+    <div class="main-content">
+        {% block content %}
+            <!-- Page Title -->
+            <h1>Dashboard</h1>
+            <!-- Main Content goes here -->
+        {% endblock %}
+    </div>
+</body>
+</html>

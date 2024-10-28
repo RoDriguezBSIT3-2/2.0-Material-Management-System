@@ -1,0 +1,255 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1 class="page-title">View Material Waste Log</h1>
+
+<nav class="inventory-nav">
+    <a href="{{ url_for('get_material_log') }}" class="nav-button">
+        <i class="fas fa-arrow-left"></i> Back
+    </a>
+    <div class="nav-button dropdown" id="export-button">
+        <i class="fas fa-file-export"></i> Export
+        <div class="dropdown-menu" id="export-options">
+            <ul>
+                <li><a href="#" class="export-option" data-type="copy"><i class="fas fa-copy"></i> Copy</a></li>
+                <li><a href="#" class="export-option" data-type="csv"><i class="fas fa-file-csv"></i> CSV</a></li>
+                <li><a href="#" class="export-option" data-type="excel"><i class="fas fa-file-excel"></i> Excel</a></li>
+                <li><a href="#" class="export-option" data-type="pdf"><i class="fas fa-file-pdf"></i> PDF</a></li>
+                <li><a href="#" class="export-option" data-type="print"><i class="fas fa-print"></i> Print</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="inventory-info">
+    <form id="date-search-form" action="{{ url_for('view_material_log') }}" method="GET">
+        <input type="date" name="date" class="date-box" placeholder="YYYY-MM-DD" value="{{ request.args.get('date', date_today) }}">
+        <button type="submit" class="search-button">Search</button>
+    </form>
+</div>
+
+<table class="inventory-table">
+    <thead>
+        <tr>
+            <th>Items</th>
+            <th>(UOI)</th>
+            <th>Quantity</th>
+            <th>Description</th>
+            <th>Image</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% if material_log %}
+            {% for item in material_log %}
+            <tr>
+                <td>{{ item['item'] }}</td>
+                <td>{{ item['uoi'] }}</td>
+                <td>{{ item['quantity'] }}</td>
+                <td>{{ item['description'] }}</td>
+                <td>
+                    {% if item['image_url'] %}
+                        <img src="{{ item['image_url'] }}" alt="{{ item['item'] }}" class="item-image" onclick="openImageModal('{{ item['image_url'] }}')">
+                    {% else %}
+                        No Image
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        {% else %}
+            <tr>
+                <td colspan="5">No material records found for the selected date.</td>
+            </tr>
+        {% endif %}
+    </tbody>
+</table>
+
+<!-- Image Modal for viewing large images -->
+<div id="imageModal" class="modal">
+    <div class="modal-content">
+        <span class="close-button">&times;</span>
+        <img id="modalImage" src="" alt="Material Waste Image" class="modal-image">
+    </div>
+</div>
+
+<style>
+
+    #export-button {
+    background-color: #c8131a;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+    }
+
+    #export-button:hover {
+        background-color: #c8131a;
+    }
+
+    /* Export options dropdown container */
+    #export-options {
+        display: none;
+        position: absolute;
+        background-color: white;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        border-radius: 4px;
+        z-index: 1000;
+    }
+
+    /* Export option items */
+    .export-option {
+        color: #333;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+        font-size: 14px;
+        transition: background-color 0.2s;
+    }
+
+    .export-option:hover {
+        background-color: #f5f5f5;
+        cursor: pointer;
+    }
+
+    /* Hide default DataTables buttons */
+    .hidden-button {
+        display: none !important;
+    }
+
+    .dataTables_wrapper .dataTables_filter {
+    display: none;
+    }
+
+    /* Pagination styling */
+    .dataTables_wrapper .dataTables_paginate {
+        margin-top: 15px;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        padding: 6px 12px;
+        margin: 0 2px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+        background-color: #c8131a;
+        color: white !important;
+        border-color: ##c8131a;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+        background-color: #f5f5f5;
+        color: #333 !important;
+    }
+
+
+</style>
+
+<script>
+// Image Modal logic
+var imageModal = document.getElementById("imageModal");
+var modalImage = document.getElementById("modalImage");
+var closeImageModalButton = document.getElementsByClassName("close-button")[0];
+
+function openImageModal(imageUrl) {
+    modalImage.src = imageUrl;
+    imageModal.style.display = "block";
+}
+
+closeImageModalButton.addEventListener("click", function() {
+    imageModal.style.display = "none";
+});
+
+// Close modal when clicking outside the modal content
+window.addEventListener("click", function(event) {
+    if (event.target == imageModal) {
+        imageModal.style.display = "none";
+    }
+});
+     $(document).ready(function() {
+    // Initialize the DataTable
+    const table = $('.inventory-table').DataTable({
+        dom: 'Bfrtip',
+        buttons: [
+            {
+                extend: 'copy',
+                className: 'hidden-button',
+                exportOptions: {
+                    columns: ':not(:last-child)' // Exclude the Actions column
+                }
+            },
+            {
+                extend: 'csv',
+                className: 'hidden-button',
+                exportOptions: {
+                    columns: ':not(:last-child)'
+                },
+                filename: 'inventory_report'
+            },
+            {
+                extend: 'excel',
+                className: 'hidden-button',
+                exportOptions: {
+                    columns: ':not(:last-child)'
+                },
+                filename: 'inventory_report'
+            },
+            {
+                extend: 'pdf',
+                className: 'hidden-button',
+                exportOptions: {
+                    columns: ':not(:last-child)'
+                },
+                filename: 'inventory_report',
+                customize: function(doc) {
+                    doc.defaultStyle.fontSize = 10;
+                    doc.styles.tableHeader.fontSize = 11;
+                    doc.styles.title.fontSize = 14;
+                    doc.content[0].text = 'Inventory Report';
+                    doc.content[1].table.widths = Array(doc.content[1].table.body[0].length).fill('*');
+                }
+            },
+            {
+                extend: 'print',
+                className: 'hidden-button',
+                exportOptions: {
+                    columns: ':not(:last-child)'
+                },
+                customize: function(win) {
+                    $(win.document.body).find('h1').text('Material Waste Log');
+                }
+            }
+        ],
+        // Hide the default buttons
+        dom: 'Bfrtip'
+    });
+
+    // Handle custom export button clicks
+    $('.export-option').on('click', function(e) {
+        e.preventDefault();
+        const exportType = $(this).data('type');
+        table.button(`.buttons-${exportType}`).trigger();
+        $('#export-options').hide();
+    });
+
+    // Toggle dropdown
+    $('#export-button').on('click', function(e) {
+        e.stopPropagation();
+        $('#export-options').toggle();
+    });
+
+    // Close dropdown when clicking outside
+    $(document).on('click', function(e) {
+        if (!$(e.target).closest('#export-button').length) {
+            $('#export-options').hide();
+        }
+    });
+});
+</script>
+
+{% endblock %}
