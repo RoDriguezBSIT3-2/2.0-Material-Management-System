@@ -62,11 +62,9 @@ class TotalExpenses(db.Model):
             "id": self.id,
             "date": self.date.strftime('%Y-%m-%d'),
             "total_amount": self.total_amount,
-            "items": [item.to_dict() for item in self.items]
         }
 
     def update_total_amount(self):
-        """Recalculate the total amount based on associated items."""
         self.total_amount = sum(item.unit_price * item.quantity for item in self.items)
         db.session.commit()
 
