@@ -60,6 +60,13 @@ class TotalExpenses(db.Model):
     def __repr__(self):
         return f"<TotalExpenses {self.total_amount} on {self.date}>"
 
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "date": self.date.strftime('%Y-%m-%d'),
+            "total_amount": self.total_amount
+        }
+
 
 # Create database tables
 with app.app_context():
@@ -781,6 +788,53 @@ def delete_purchase(purchase_id):
     db.session.commit()
 
     return redirect(url_for('purchase_records'))
+@app.route('/api/expenses', methods=['GET'])
+def get_expenses():
+    expenses = TotalExpenses.query.all()
+    return jsonify([expense.to_dict() for expense in expenses]), 200
+
+# Endpoint to get a specific expense by ID
+@app.route('/api/expenses/<int:id>', methods=['GET'])
+def get_expense(id):
+    expense = TotalExpenses.query.get_or_404(id)
+    return jsonify(expense.to_dict()), 200
+
+# Endpoint to add a new expense
+@app.route('/api/expenses', methods=['POST'])
+def add_expense():
+    data = request.get_json()
+    if not data or 'total_amount' not in data:
+        return jsonify({"error": "total_amount is required"}), 400
+
+    new_expense = TotalExpenses(
+        date=datetime.strptime(data['date'], '%Y-%m-%d') if 'date' in data else datetime.utcnow(),
+        total_amount=data['total_amount']
+    )
+    db.session.add(new_expense)
+    db.session.commit()
+    return jsonify(new_expense.to_dict()), 201
+
+# Endpoint to update an expense
+@app.route('/api/expenses/<int:id>', methods=['PUT'])
+def update_expense(id):
+    expense = TotalExpenses.query.get_or_404(id)
+    data = request.get_json()
+
+    if 'total_amount' in data:
+        expense.total_amount = data['total_amount']
+    if 'date' in data:
+        expense.date = datetime.strptime(data['date'], '%Y-%m-%d')
+
+    db.session.commit()
+    return jsonify(expense.to_dict()), 200
+
+# Endpoint to delete an expense
+@app.route('/api/expenses/<int:id>', methods=['DELETE'])
+def delete_expense(id):
+    expense = TotalExpenses.query.get_or_404(id)
+    db.session.delete(expense)
+    db.session.commit()
+    return jsonify({"message": "Expense deleted successfully"}), 200
 
 
 @app.route('/logout')
