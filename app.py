@@ -796,11 +796,25 @@ def delete_purchase(purchase_id):
     # Find the purchase record by its ID
     purchase = PurchaseRecord.query.get_or_404(purchase_id)
 
+    # Retrieve the total expenses for the date of the purchase
+    total_expenses_today = TotalExpenses.query.filter_by(date=purchase.date).first()
+
+    if total_expenses_today:
+        # Subtract the purchase total from the daily total expenses
+        total_expenses_today.total_amount -= purchase.total_price
+
+        # If the total amount becomes zero or negative, consider deleting the TotalExpenses record
+        if total_expenses_today.total_amount <= 0:
+            db.session.delete(total_expenses_today)
+
     # Delete the purchase record
     db.session.delete(purchase)
+
+    # Commit the changes to the database
     db.session.commit()
 
     return redirect(url_for('purchase_records'))
+
 @app.route('/api/expenses', methods=['GET'])
 def get_expenses():
     expenses = TotalExpenses.query.all()
