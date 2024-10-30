@@ -64,9 +64,6 @@ class TotalExpenses(db.Model):
             "total_amount": self.total_amount,
         }
 
-    def update_total_amount(self):
-        self.total_amount = sum(item.unit_price * item.quantity for item in self.items)
-        db.session.commit()
 
 
 # Create database tables
@@ -754,6 +751,9 @@ def edit_purchase(purchase_id):
     purchase = PurchaseRecord.query.get_or_404(purchase_id)
 
     if request.method == 'POST':
+        # Retrieve the existing total price for adjustment
+        existing_total_price = purchase.total_price
+
         # Update the form data
         purchase.item = request.form['item']
         purchase.quantity = int(request.form['quantity'])
@@ -761,6 +761,17 @@ def edit_purchase(purchase_id):
 
         # Calculate the updated total price
         purchase.total_price = purchase.quantity * purchase.unit_price
+
+        # Update the total expenses
+        total_expenses_today = TotalExpenses.query.filter_by(date=datetime.utcnow().date()).first()
+
+        if total_expenses_today:
+            # Adjust the total amount based on the change
+            total_expenses_today.total_amount += (purchase.total_price - existing_total_price)
+        else:
+            # Create a new total record if it does not exist
+            total_expenses_today = TotalExpenses(date=datetime.utcnow().date(), total_amount=purchase.total_price)
+            db.session.add(total_expenses_today)
 
         # Handle receipt file upload (if a new one is provided)
         receipt = request.files.get('receipt')
@@ -777,6 +788,7 @@ def edit_purchase(purchase_id):
 
     # If GET request, return data for editing
     return render_template('edit_purchase.html', purchase=purchase)
+
 
 
 @app.route('/delete_purchase/<int:purchase_id>', methods=['POST'])
