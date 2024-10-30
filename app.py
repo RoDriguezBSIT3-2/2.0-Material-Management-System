@@ -57,15 +57,18 @@ class TotalExpenses(db.Model):
     date = db.Column(db.Date, nullable=False, default=datetime.utcnow)
     total_amount = db.Column(db.Float, nullable=False)
 
-    def __repr__(self):
-        return f"<TotalExpenses {self.total_amount} on {self.date}>"
-
     def to_dict(self):
         return {
             "id": self.id,
             "date": self.date.strftime('%Y-%m-%d'),
-            "total_amount": self.total_amount
+            "total_amount": self.total_amount,
+            "items": [item.to_dict() for item in self.items]
         }
+
+    def update_total_amount(self):
+        """Recalculate the total amount based on associated items."""
+        self.total_amount = sum(item.unit_price * item.quantity for item in self.items)
+        db.session.commit()
 
 
 # Create database tables
